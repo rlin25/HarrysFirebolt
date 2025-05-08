@@ -1,0 +1,536 @@
+{
+  "systemName": "HarrysFirebolt",
+  "systemGoal": "Validate and enhance prompts for AI code generators like Cursor.AI, ensuring clarity, actionability, and alignment with best practices.",
+  "version": "1.0-machine-readable",
+  "timestamp": "2025-05-07T23:30:30Z",
+  "principles": [
+    {
+      "id": "P1",
+      "name": "EnhanceClarityThroughGuidedValidation",
+      "coreStatement": "All input prompts must undergo a guided validation process to maximize clarity and resolve ambiguities before use in code generation, transforming unclear requirements into actionable specifications through user interaction.",
+      "implementationDirectives": [
+        {
+          "directiveId": "P1_D1",
+          "description": "Identify and log potential assumptions from the prompt for user review and confirmation.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "ASSUMPTION_HANDLING",
+          "phase": "MVP",
+          "inputs": [{"name": "rawPrompt", "type": "string"}],
+          "outputs": [{
+            "name": "potentialAssumptionsList",
+            "type": "array",
+            "itemSchema": {
+              "assumptionText": "string",
+              "inferredFrom": "string",
+              "heuristicConfidence": "enum(Low, Medium, High)",
+              "userConfirmationStatus": "enum(Pending, Confirmed, Modified, Rejected)",
+              "userModifiedText": "string_optional"
+            }
+          }],
+          "rules": [
+            "Utilize NLP techniques (e.g., entity recognition, pattern matching for vague terms, implicit goal detection heuristics) to identify segments that may represent assumptions.",
+            "Present each potential assumption to the user for explicit confirmation, modification, or rejection."
+          ],
+          "userInteraction": {
+            "type": "CONFIRMATION_REQUIRED",
+            "promptToUser": "Please review these potential assumptions identified from your prompt."
+          }
+        },
+        {
+          "directiveId": "P1_D2",
+          "description": "Evaluate prompt completeness and clarity using defined heuristics, providing qualitative feedback or flagging areas needing attention.",
+          "type": "VALIDATION_RULE",
+          "focus": "CLARITY_HEURISTICS",
+          "phase": "MVP",
+          "inputs": [{"name": "rawPrompt", "type": "string"}, {"name": "userConfirmedAssumptions", "type": "array"}],
+          "outputs": [{
+            "name": "clarityFlags",
+            "type": "array",
+            "itemSchema": {
+              "flagType": "enum(MissingActionVerb, UndefinedTerm, AmbiguousOutcome, IncompleteParameterSpec, MissingErrorHandlingConsideration)",
+              "flaggedSegment": "string",
+              "suggestion": "string"
+            }
+          }],
+          "parameters": {
+            "heuristicDefinitions": [
+              {"id": "H1", "description": "Check for presence of clear action verbs initiating the main request."},
+              {"id": "H2", "description": "Identify technical terms or nouns without sufficient definition or context in the prompt."},
+              {"id": "H3", "description": "Assess if the desired outcome or output is clearly and measurably defined."},
+              {"id": "H4", "description": "Check if parameters for functions/modules are specified with types or constraints."}
+            ]
+          }
+        },
+        {
+          "directiveId": "P1_D3",
+          "description": "Trigger guided clarification workflows for prompts with multiple clarity flags or critical unconfirmed assumptions.",
+          "type": "SYSTEM_BEHAVIOR",
+          "focus": "CLARIFICATION_WORKFLOW",
+          "phase": "MVP",
+          "inputs": [{"name": "clarityFlags", "type": "array"}, {"name": "potentialAssumptionsList", "type": "array"}],
+          "parameters": {
+            "clarityFlagThresholdForWorkflow": {"type": "integer", "defaultValue": 3, "configurable": true},
+            "criticalAssumptionUnconfirmedThreshold": {"type": "integer", "defaultValue": 1, "configurable": true}
+          },
+          "rules": [
+            "IF count(clarityFlags) >= clarityFlagThresholdForWorkflow OR any(assumption.userConfirmationStatus == 'Pending' AND assumption.heuristicConfidence == 'High') THEN initiateClarificationWorkflow."
+          ]
+        },
+        {
+          "directiveId": "P1_D4",
+          "description": "Maintain a user-validated cache of clarified concepts to streamline future interactions for the same user or project context.",
+          "type": "DATA_MANAGEMENT",
+          "focus": "KNOWLEDGE_CACHE",
+          "phase": "MVP",
+          "inputs": [{"name": "userClarificationEvent", "type": "object_event"}],
+          "dataStructures": [{
+            "name": "clarifiedConceptCache",
+            "schema": {
+              "userId_or_projectId": "string",
+              "ambiguousTerm": "string",
+              "clarifiedMeaning": "string",
+              "validationTimestamp": "timestamp"
+            }
+          }]
+        },
+        {
+          "directiveId": "P1_D5",
+          "description": "Offer a reformulated, structured version of the prompt, making implicit assumptions explicit based on user confirmations, for user approval.",
+          "type": "PROMPT_TRANSFORMATION",
+          "focus": "PROMPT_REFORMULATION",
+          "phase": "MVP",
+          "inputs": [{"name": "originalPrompt", "type": "string"}, {"name": "userConfirmedAssumptions", "type": "array"}, {"name": "userProvidedClarifications", "type": "array"}],
+          "outputs": [{"name": "reformulatedPrompt", "type": "string_or_structured_object"}],
+          "userInteraction": {
+            "type": "APPROVAL_REQUIRED",
+            "promptToUser": "Here is a reformulated version of your prompt based on your clarifications. Please approve or suggest modifications."
+          }
+        },
+        {
+          "directiveId": "P1_D6",
+          "description": "Store validated and reformulated prompts in a structured format suitable for AI code generator input or user records, maintaining traceability.",
+          "type": "DATA_OUTPUT",
+          "focus": "STRUCTURED_PROMPT_OUTPUT",
+          "phase": "MVP",
+          "inputs": [{"name": "finalizedPrompt", "type": "string_or_structured_object"}, {"name": "originalPromptHash", "type": "string"}],
+          "dataStructures": [{
+            "name": "validatedPromptRecord",
+            "schema": {
+              "recordId": "uuid",
+              "originalPromptHash": "string",
+              "originalPromptText": "string",
+              "validationTimestamp": "timestamp",
+              "userClarificationsLog": "array",
+              "finalPromptRepresentation": "object",
+              "traceabilityLinks": "array"
+            }
+          }]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "OutlineExecutableIntentions",
+      "coreStatement": "Prompts should reflect a clear, logical decomposition of tasks. The system assists the user in structuring their prompt to represent a high-level plan, identifying components and their conceptual dependencies as described in the prompt.",
+      "implementationDirectives": [
+        {
+          "directiveId": "P2_D1",
+          "description": "Aid the user in decomposing the prompt into distinct tasks or objectives, suggesting a high-level plan for user review and refinement.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "TASK_DECOMPOSITION",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}],
+          "outputs": [{
+            "name": "suggestedTaskDecomposition",
+            "type": "array",
+            "itemSchema": {
+              "taskId": "string",
+              "taskDescription": "string",
+              "impliedDependencies": "array_of_taskIds_or_strings",
+              "userConfirmationStatus": "enum(Pending, Confirmed, Modified, Rejected)"
+            }
+          }],
+          "rules": [
+            "Identify action phrases and distinct objectives within the prompt.",
+            "Group related statements into potential tasks.",
+            "Infer potential dependencies based on term co-occurrence or sequential descriptions."
+          ],
+          "userInteraction": {
+            "type": "REVIEW_AND_REFINE_REQUIRED",
+            "promptToUser": "Here's a suggested breakdown of tasks from your prompt. Please review and adjust."
+          }
+        },
+        {
+          "directiveId": "P2_D2",
+          "description": "Provide a qualitative complexity assessment based on the decomposed tasks and perceived interdependencies, flagging prompts for further breakdown if needed.",
+          "type": "VALIDATION_RULE",
+          "focus": "COMPLEXITY_ASSESSMENT",
+          "phase": "MVP",
+          "inputs": [{"name": "userConfirmedTaskDecomposition", "type": "array"}],
+          "outputs": [{"name": "qualitativeComplexityFlag", "type": "enum(Simple, Moderate, PotentiallyComplex, HighComplexity_SuggestBreakdown)"}],
+          "parameters": {
+            "maxTasksBeforeComplexFlag": {"type": "integer", "defaultValue": 5, "configurable": true},
+            "maxDependenciesPerTaskAverage": {"type": "float", "defaultValue": 2.0, "configurable": true},
+            "complexKeywordsList": {"type": "array_of_strings", "defaultValue": ["real-time", "distributed", "asynchronous", "machine learning", "cryptographic"]}
+          },
+          "rules": [
+            "IF count(tasks) > maxTasksBeforeComplexFlag OR average(dependencies_per_task) > maxDependenciesPerTaskAverage OR any_task_description_contains_keywords(complexKeywordsList) THEN set_complexity_flag_appropriately."
+          ]
+        },
+        {
+          "directiveId": "P2_D3",
+          "description": "Check the user-confirmed plan (prompt decomposition) for apparent completeness and internal consistency as described within the prompt itself.",
+          "type": "VALIDATION_RULE",
+          "focus": "PROMPT_COHERENCE_CHECK",
+          "phase": "MVP",
+          "inputs": [{"name": "userConfirmedTaskDecomposition", "type": "array"}, {"name": "originalValidatedPrompt", "type": "string_or_structured_object"}],
+          "outputs": [{"name": "coherenceFlags", "type": "array", "itemSchema": {"flagType": "enum(PotentialOmission, ContradictoryStatement, MissingSuccessCriteriaPrompt)", "details": "string"}}],
+          "rules": [
+            "Compare task list against major themes/requirements of original prompt to flag potential omissions.",
+            "Identify tasks with apparently contradictory goals or requirements within their descriptions.",
+            "Suggest inclusion of success criteria definition within the prompt for tasks lacking clear outcomes."
+          ]
+        },
+        {
+          "directiveId": "P2_D4",
+          "description": "Support iterative refinement of the decomposed plan by the user, tracking versions.",
+          "type": "SYSTEM_BEHAVIOR",
+          "focus": "ITERATIVE_REFINEMENT",
+          "phase": "MVP",
+          "inputs": [{"name": "userEditEventToDecomposition", "type": "object_event"}],
+          "outputs": [{"name": "versionedTaskDecompositionHistory", "type": "array"}],
+          "rules": ["On user modification to task decomposition, save a new version and maintain history for the session."]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "PromoteStructuralConsiderationsInPrompts",
+      "coreStatement": "Prompts for code generation should articulate structural intentions. The system guides users to specify these intentions within the prompt and prepares for future deeper codebase integrations.",
+      "implementationDirectives": [
+        {
+          "directiveId": "P3_D1",
+          "description": "Identify keywords in the prompt suggesting structural elements (classes, modules, interfaces) and prompt the user to make these explicit.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "PROMPT_LEVEL_STRUCTURAL_ARTICULATION",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}],
+          "outputs": [{"name": "structuralElementClarificationRequests", "type": "array", "itemSchema": {"keyword": "string", "requestedClarification": "string"}}],
+          "parameters": {
+            "structuralKeywords": {"type": "array_of_strings", "defaultValue": ["class", "module", "function", "interface", "component", "service", "api"]}
+          },
+          "rules": [
+            "IF prompt_contains_any(structuralKeywords) AND associated_details_are_vague THEN generate_clarification_request."
+          ],
+          "userInteraction": {
+            "type": "CLARIFICATION_REQUIRED",
+            "promptToUser": "Your prompt mentions '{keyword}'. Could you please specify more details (e.g., name, responsibilities, relationships)?"
+          }
+        },
+        {
+          "directiveId": "P3_D2",
+          "description": "Enable full structural awareness via IDE integration or project uploads for comprehensive analysis.",
+          "type": "FUTURE_ENHANCEMENT_NOTE",
+          "focus": "DEEP_CODEBASE_AWARENESS",
+          "phase": "Advanced",
+          "notes": "Requires direct access to codebase ASTs, dependency graphs. Out of scope for initial stand-alone validator. Involves parsing, semantic analysis of existing code."
+        },
+        {
+          "directiveId": "P3_D3",
+          "description": "Generate documentation of structural elements described and confirmed by the user within the prompt.",
+          "type": "DATA_OUTPUT",
+          "focus": "PROMPT_STRUCTURE_DOCUMENTATION",
+          "phase": "MVP",
+          "inputs": [{"name": "userConfirmedStructuralElements", "type": "array"}],
+          "outputs": [{
+            "name": "validatedPromptStructureJSON",
+            "type": "json_object",
+            "schema": {
+              "elements": "array",
+              "itemSchema": {
+                "elementName": "string",
+                "elementType": "string",
+                "responsibilities": "string_array",
+                "relationships": "array_of_objects"
+              }
+            }
+          }]
+        },
+        {
+          "directiveId": "P3_D4",
+          "description": "Encourage users to define interfaces (at a high level) within the prompt if interactions between components are mentioned.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "INTERFACE_DEFINITION_ENCOURAGEMENT",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}],
+          "rules": [
+            "IF prompt_describes_interaction_between_A_and_B AND interface_is_not_specified THEN suggest_prompt_user_to_define_interface_for_A_or_B."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "EncourageAtomicAndTraceablePromptSegments",
+      "coreStatement": "Prompts should be constructed to encourage generation of logically complete, independently understandable units of change. The system assists in segmenting complex prompts and ensuring traceability.",
+      "implementationDirectives": [
+        {
+          "directiveId": "P4_D1",
+          "description": "For complex prompts, suggest breaking them into smaller, focused sub-prompts corresponding to single logical units, for user confirmation.",
+          "type": "PROMPT_TRANSFORMATION",
+          "focus": "LOGICAL_UNIT_SEGMENTATION",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}, {"name": "userConfirmedTaskDecomposition", "type": "array"}],
+          "outputs": [{"name": "suggestedSubPrompts", "type": "array", "itemSchema": {"subPromptId": "string", "subPromptText": "string", "linkedTaskId": "string"}}],
+          "rules": [
+            "Based on task decomposition (P2_D1), if overall complexity is high (P2_D2), propose segmenting the prompt into sub-prompts per task or small task groups."
+          ],
+          "userInteraction": {
+            "type": "CONFIRMATION_REQUIRED",
+            "promptToUser": "This prompt seems complex. Would you like to break it into these smaller, more manageable sub-prompts?"
+          }
+        },
+        {
+          "directiveId": "P4_D2",
+          "description": "For each validated prompt/sub-prompt, suggest a structured documentation stub for the user or AI to partially pre-fill.",
+          "type": "DATA_OUTPUT",
+          "focus": "PROMPT_DOCUMENTATION_STUB",
+          "phase": "MVP",
+          "inputs": [{"name": "finalizedPromptOrSubPrompt", "type": "string_or_structured_object"}],
+          "outputs": [{
+            "name": "documentationStub",
+            "type": "json_object",
+            "schema": {
+              "promptId": "string",
+              "originalIntentSummary": "string",
+              "keyElementsInPrompt": "array_of_strings",
+              "suggestedVerificationNotesForPrompt": "string",
+              "relatedRequirements": "array_of_strings_optional"
+            }
+          }]
+        },
+        {
+          "directiveId": "P4_D3",
+          "description": "Guide the user to consider logical implementation boundaries within their prompt (e.g., API contract changes).",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "IMPLEMENTATION_BOUNDARY_GUIDANCE",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}],
+          "rules": [
+            "IF prompt_implies_changes_to_external_facing_aspects (e.g., API, UI visible to other teams) THEN prompt_user_to_confirm_and_specify_boundary_impact."
+          ]
+        },
+        {
+          "directiveId": "P4_D4",
+          "description": "Maintain traceability between original prompt segments, user clarifications, and final validated prompt segments/sub-prompts.",
+          "type": "DATA_MANAGEMENT",
+          "focus": "TRACEABILITY",
+          "phase": "MVP",
+          "inputs": [{"name": "allUserInteractionsAndPromptVersions", "type": "log_data"}],
+          "outputs": [{"name": "traceabilityMatrixOrLinks", "type": "object"}],
+          "rules": ["Log all transformations and user decisions to establish a clear lineage from original input to final validated output."]
+        },
+        {
+          "directiveId": "P4_D5",
+          "description": "Generate a suggested structured commit message template based on validated prompt content for user adaptation post-code-generation.",
+          "type": "UTILITY",
+          "focus": "COMMIT_MESSAGE_TEMPLATE_GENERATION",
+          "phase": "MVP",
+          "inputs": [{"name": "finalizedPromptOrSubPrompt", "type": "string_or_structured_object"}, {"name": "documentationStub", "type": "json_object"}],
+          "outputs": [{"name": "suggestedCommitMessage", "type": "string"}],
+          "parameters": {
+            "commitMessageFormat": "string_template(type(scope): concise description\n\nLonger explanation.\nAddresses requirement: {req_id}.\nRelates to prompt: {prompt_id}.)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "GuideDependencyConsiderations",
+      "coreStatement": "When prompts involve functionalities that might require external libraries/modules, the system guides users to consider dependency implications (security, maintenance, consistency).",
+      "implementationDirectives": [
+        {
+          "directiveId": "P5_D1",
+          "description": "Scan prompts for explicit mentions of libraries/dependencies or functionalities typically requiring them, and flag these for user awareness.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "DEPENDENCY_MENTION_FLAGGING",
+          "phase": "MVP",
+          "inputs": [{"name": "validatedPrompt", "type": "string_or_structured_object"}],
+          "outputs": [{"name": "potentialDependencyFlags", "type": "array", "itemSchema": {"dependencyNameOrFunctionality": "string", "reasonForFlagging": "string"}}],
+          "parameters": {
+            "knownDependencyKeywords": ["library", "package", "import", "use", "require"],
+            "functionalityToDependencyMap": {
+                "date picker": "ui-datepicker-library-suggestion",
+                "oauth": "oauth-client-library-suggestion",
+                "http client": "http-request-library-suggestion",
+                "markdown parsing": "markdown-parser-suggestion"
+            }
+          },
+          "rules": [
+            "IF prompt_contains_any(knownDependencyKeywords) OR prompt_describes_functionality_in(functionalityToDependencyMap_keys) THEN create_dependency_flag."
+          ],
+          "userInteraction": {
+            "type": "AWARENESS_PROMPT",
+            "promptToUser": "Your prompt mentions '{dependencyNameOrFunctionality}', which might involve a new dependency. Please consider its implications."
+          }
+        },
+        {
+          "directiveId": "P5_D2",
+          "description": "Allow users to maintain a simple project-specific list of preferred/discouraged libraries within the web app for AI reference.",
+          "type": "DATA_MANAGEMENT",
+          "focus": "USER_MANAGED_DEPENDENCY_REGISTRY",
+          "phase": "MVP",
+          "inputs": [{"name": "userSettingsForDependencies", "type": "object"}],
+          "dataStructures": [{
+            "name": "projectDependencyPreferences",
+            "schema": {
+              "projectId": "string",
+              "preferredLibraries": [{"name": "string", "reason": "string_optional"}],
+              "discouragedLibraries": [{"name": "string", "reason": "string_optional"}],
+              "blacklistedLibraries": [{"name": "string", "reason": "string"}]
+            }
+          }],
+          "rules": ["When P5_D1 flags a dependency, cross-reference with this user-defined registry and highlight matches."]
+        },
+        {
+          "directiveId": "P5_D3",
+          "description": "Offer a generic checklist for users to consider when a new potential dependency is flagged.",
+          "type": "UTILITY",
+          "focus": "DEPENDENCY_INTRODUCTION_CHECKLIST",
+          "phase": "MVP",
+          "parameters": {
+            "checklistItems": [
+              "Alignment with project's existing tech stack?",
+              "Known security vulnerabilities (user to verify externally initially)?",
+              "Active maintenance and community support (user to verify externally initially)?",
+              "Licensing compatibility with project?",
+              "Necessity: Is there an existing in-project solution or simpler alternative?"
+            ]
+          },
+          "outputs": [{"name": "dependencyConsiderationChecklist", "type": "array_of_strings"}]
+        },
+        {
+          "directiveId": "P5_D4",
+          "description": "Integrate with package manager APIs, vulnerability databases, and perform codebase scans for advanced dependency analysis.",
+          "type": "FUTURE_ENHANCEMENT_NOTE",
+          "focus": "ADVANCED_DEPENDENCY_ANALYSIS",
+          "phase": "Advanced",
+          "notes": "Requires external API integrations, security credentials, and potentially codebase access. Will enable automated scoring for security, maintenance, familiarity."
+        },
+        {
+          "directiveId": "P5_D5",
+          "description": "Prompt the user to specify version constraints if they mention or confirm a new dependency.",
+          "type": "ANALYSIS_SUPPORT",
+          "focus": "VERSION_CONSIDERATION_PROMPT",
+          "phase": "MVP",
+          "inputs": [{"name": "confirmedOrMentionedDependency", "type": "string"}],
+          "userInteraction": {
+            "type": "INFORMATION_REQUEST",
+            "promptToUser": "For the dependency '{confirmedOrMentionedDependency}', do you have specific version requirements (e.g., '>=1.2.3', '<2.0')?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "ImplementSelfImprovementAndUserFeedbackLoops",
+      "coreStatement": "The system must continuously improve its prompt validation effectiveness by learning from user interactions and feedback, identifying patterns where its guidance is most (or least) helpful.",
+      "implementationDirectives": [
+        {
+          "directiveId": "P6_D1",
+          "description": "Track anonymized indicators of validator effectiveness based on user interactions within the system.",
+          "type": "SYSTEM_MONITORING",
+          "focus": "VALIDATOR_PERFORMANCE_METRICS",
+          "phase": "MVP",
+          "inputs": [{"name": "userInteractionLogs", "type": "stream_or_batch_data"}],
+          "outputs": [{"name": "performanceMetricsReport", "type": "object"}],
+          "parameters": {
+            "trackedMetrics": [
+              "clarificationRequestFrequencyByPattern",
+              "userAcceptanceRateOfAIReformulations",
+              "userModificationRateOfAIReformulations",
+              "taskCompletionRateInValidationWorkflow",
+              "averageSessionDurationForValidation",
+              "explicitUserFeedbackScores"
+            ]
+          },
+          "rules": ["Aggregate interaction logs to compute performance metrics. These metrics inform system refinement, not direct runtime decisions."]
+        },
+        {
+          "directiveId": "P6_D2",
+          "description": "Identify patterns in prompts or user interactions that consistently require extensive clarification or lead to rejected AI suggestions, to refine AI heuristics.",
+          "type": "SYSTEM_ANALYSIS",
+          "focus": "COMMON_ISSUE_PATTERN_DETECTION",
+          "phase": "MVP",
+          "inputs": [{"name": "performanceMetricsReport", "type": "object"}, {"name": "userInteractionLogs", "type": "stream_or_batch_data"}],
+          "outputs": [{"name": "identifiedProblemPatterns", "type": "array", "itemSchema": {"patternDescription": "string", "frequency": "integer", "impactScore": "float"}}],
+          "rules": ["Analyze logs for recurring sequences of user rejection or high clarification needs around specific prompt characteristics or AI suggestions."]
+        },
+        {
+          "directiveId": "P6_D3",
+          "description": "Implement simplified recovery and guidance strategies if users repeatedly reject suggestions or struggle with a validation aspect.",
+          "type": "SYSTEM_BEHAVIOR",
+          "focus": "GRADUATED_RECOVERY_STRATEGIES",
+          "phase": "MVP",
+          "inputs": [{"name": "realtimeUserInteractionState", "type": "object"}],
+          "rules": [
+            "IF user_rejects_N_consecutive_reformulations THEN offer_simplified_analysis_option OR offer_manual_override_prompt_mode.",
+            "IF user_spends_X_time_on_specific_clarification_step THEN offer_contextual_help_or_example."
+          ],
+          "parameters": {
+            "rejectionThresholdForSimplifiedMode": {"type": "integer", "defaultValue": 3},
+            "timeThresholdForContextualHelpSeconds": {"type": "integer", "defaultValue": 120}
+          }
+        },
+        {
+          "directiveId": "P6_D4",
+          "description": "Manage context primarily for the current validation session, allowing users to save and resume.",
+          "type": "SYSTEM_BEHAVIOR",
+          "focus": "CONTEXT_MANAGEMENT_SESSION_BASED",
+          "phase": "MVP",
+          "dataStructures": [{
+            "name": "validationSessionState",
+            "schema": {
+              "sessionId": "uuid",
+              "userId": "string",
+              "originalPrompt": "string",
+              "currentStepInWorkflow": "string",
+              "accumulatedClarifications": "array",
+              "promptVersions": "array",
+              "lastModified": "timestamp"
+            }
+          }]
+        },
+        {
+          "directiveId": "P6_D5",
+          "description": "Provide explicit mechanisms for users to rate usefulness of specific suggestions or the overall validation process.",
+          "type": "USER_INTERACTION_POINT",
+          "focus": "USER_FEEDBACK_MECHANISM",
+          "phase": "MVP",
+          "inputs": [{"name": "specificAISuggestionOrWorkflowCompletionEvent", "type": "object_event"}],
+          "outputs": [{"name": "userFeedbackRecord", "type": "object"}],
+          "dataStructures": [{
+            "name": "feedbackRecordSchema",
+            "schema": {
+              "feedbackId": "uuid",
+              "userId": "string",
+              "timestamp": "timestamp",
+              "context": "string",
+              "rating": "integer_1_to_5",
+              "comment": "string_optional"
+            }
+          }]
+        },
+        {
+          "directiveId": "P6_D6",
+          "description": "Use learnings from user interactions and feedback primarily to improve the prompt validation process itself (e.g., refining heuristics, improving suggestions).",
+          "type": "SYSTEM_IMPROVEMENT_PROCESS",
+          "focus": "ITERATIVE_IMPROVEMENT_STRATEGY",
+          "phase": "MVP",
+          "inputs": [{"name": "aggregatedFeedbackAndMetrics", "type": "object"}],
+          "notes": "This is a meta-directive about the development process of Harry's Firebolt itself, guiding how to use data from P6_D1, P6_D2, P6_D5 to refine the system's rules and parameters."
+        }
+      ]
+    }
+  ]
+}
