@@ -12,12 +12,10 @@ export interface PromptAnalysisResult {
 }
 
 export interface Assumption {
-  id: string;
-  text: string;
-  inferredFrom: string;
-  confidence: 'Low' | 'Medium' | 'High';
-  status: 'Pending' | 'Confirmed' | 'Modified' | 'Rejected';
-  modifiedText?: string;
+  type: 'InputFormat' | 'ErrorHandling' | 'Performance';
+  description: string;
+  impact: 'low' | 'medium' | 'high';
+  suggestion: string;
 }
 
 export interface ClarityFlag {
@@ -27,15 +25,17 @@ export interface ClarityFlag {
 }
 
 export interface StructuralElement {
-  type: 'class' | 'module' | 'function' | 'interface' | 'component' | 'service' | 'api';
+  type: 'function' | 'class' | 'interface' | 'module' | 'component' | 'service' | 'api';
   name: string;
-  description: string;
-  relationships: string[];
+  parameters?: string[];
+  returnType?: string;
+  methods?: string[];
+  properties?: string[];
 }
 
 export interface AnalysisTask {
   id: string;
   description: string;
   dependencies: string[];
-  status: 'Pending' | 'Confirmed' | 'Modified' | 'Rejected';
+  estimatedEffort: 'low' | 'medium' | 'high';
 } 

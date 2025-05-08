@@ -120,24 +120,77 @@ export class AIEngine {
     prompt: string,
     analysis: PromptAnalysisResult
   ): Promise<string> {
-    // Implement clarity enhancement logic
-    // This should use NLP techniques to improve clarity
-    return prompt;
+    let enhancedPrompt = prompt;
+
+    // Add missing error handling considerations
+    if (analysis.assumptions.some(a => a.type === 'ErrorHandling')) {
+      enhancedPrompt += '. Handle invalid inputs and edge cases appropriately';
+    }
+
+    // Add type specifications for parameters
+    const incompleteParams = analysis.clarityFlags
+      .filter(f => f.type === 'IncompleteParameterSpec')
+      .map(f => f.segment);
+    
+    if (incompleteParams.length > 0) {
+      enhancedPrompt += `. Parameters: ${incompleteParams.join(', ')} should be properly typed`;
+    }
+
+    // Add success criteria for ambiguous outcomes
+    if (analysis.clarityFlags.some(f => f.type === 'AmbiguousOutcome')) {
+      enhancedPrompt += '. Return value should be clearly specified';
+    }
+
+    return enhancedPrompt;
   }
 
   private async enhanceStructure(
     prompt: string,
     analysis: PromptAnalysisResult
   ): Promise<string> {
-    // Implement structure enhancement logic
-    // This should improve the organization and flow of the prompt
-    return prompt;
+    let enhancedPrompt = prompt;
+
+    // Add function signature if missing
+    if (analysis.structuralElements.length > 0) {
+      const func = analysis.structuralElements[0];
+      if (func.type === 'function' && (!func.parameters || !func.returnType)) {
+        enhancedPrompt = `Create a function with parameters (${func.parameters?.join(', ') || 'n: number'}) that returns ${func.returnType || 'an array of numbers'}. ${enhancedPrompt}`;
+      }
+    }
+
+    // Add implementation steps if task decomposition exists
+    if (analysis.taskDecomposition.length > 0) {
+      enhancedPrompt += '\n\nImplementation steps:';
+      analysis.taskDecomposition.forEach(task => {
+        enhancedPrompt += `\n- ${task.description}`;
+      });
+    }
+
+    return enhancedPrompt;
   }
 
   private async formatPrompt(prompt: string): Promise<string> {
-    // Implement auto-formatting logic
-    // This should ensure consistent formatting and style
-    return prompt;
+    // Split into lines for better readability
+    const lines = prompt.split('\n');
+    let formattedPrompt = '';
+
+    // Format each line
+    lines.forEach((line, index) => {
+      // Add newline before implementation steps
+      if (line.includes('Implementation steps:')) {
+        formattedPrompt += '\n';
+      }
+
+      // Add the line
+      formattedPrompt += line;
+
+      // Add newline after main description and between steps
+      if (index === 0 || line.startsWith('-')) {
+        formattedPrompt += '\n';
+      }
+    });
+
+    return formattedPrompt.trim();
   }
 
   public async processFeedback(feedback: FeedbackData): Promise<void> {

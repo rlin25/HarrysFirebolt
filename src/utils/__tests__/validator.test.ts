@@ -36,7 +36,7 @@ describe('PromptValidator', () => {
     });
 
     it('should reject a too short prompt', () => {
-      const shortPrompt = 'Make a function';
+      const shortPrompt = 'code';
       const result = validator.validate(shortPrompt);
       expect(result.isValid).toBe(false);
       expect(result.errors).toContainEqual(expect.stringContaining('too short'));

@@ -11,11 +11,22 @@ export class PromptValidator {
   }
 
   validate(prompt: string): ValidationResult {
+    const clarity = this.calculateClarity(prompt);
+    const technicalTerms = this.extractTechnicalTerms(prompt);
+    const codeBlocks = this.countCodeBlocks(prompt);
+    const examples = this.countExamples(prompt);
+
     const result: ValidationResult = {
       isValid: true,
       errors: [],
       warnings: [],
-      suggestions: []
+      suggestions: [],
+      metadata: {
+        clarityScore: clarity,
+        technicalTermCount: technicalTerms.length,
+        codeBlockCount: codeBlocks,
+        exampleCount: examples
+      }
     };
 
     // Length validation
@@ -30,7 +41,6 @@ export class PromptValidator {
     }
 
     // Basic clarity check
-    const clarity = this.calculateClarity(prompt);
     if (clarity < this.config.validationThresholds.minClarity) {
       result.warnings.push(`Prompt clarity is low (${clarity.toFixed(2)})`);
       result.suggestions.push('Consider adding more specific details or examples');
@@ -47,24 +57,39 @@ export class PromptValidator {
     // 1. Presence of specific technical terms
     // 2. Sentence structure
     // 3. Presence of examples or code snippets
-    const technicalTerms = tokens.filter(token => 
-      /^(function|class|interface|type|const|let|var|import|export|return|if|else|for|while)$/i.test(token)
-    ).length;
-
+    const technicalTerms = this.extractTechnicalTerms(prompt);
     const sentences = prompt.split(/[.!?]+/).filter(s => s.trim().length > 0);
     const avgSentenceLength = sentences.reduce((sum, s) => sum + s.length, 0) / sentences.length;
 
-    const hasCodeBlock = /```[\s\S]*?```/.test(prompt);
-    const hasExample = /example|sample|instance|case/i.test(prompt);
+    const hasCodeBlock = this.countCodeBlocks(prompt) > 0;
+    const hasExample = this.countExamples(prompt) > 0;
 
     // Calculate clarity score (0-1)
     const score = (
-      (technicalTerms / tokens.length) * 0.4 +
+      (technicalTerms.length / tokens.length) * 0.4 +
       (avgSentenceLength > 10 && avgSentenceLength < 50 ? 0.3 : 0.1) +
       (hasCodeBlock ? 0.2 : 0) +
       (hasExample ? 0.1 : 0)
     );
 
     return Math.min(1, Math.max(0, score));
+  }
+
+  private extractTechnicalTerms(prompt: string): string[] {
+    const tokens = tokenizer.tokenize(prompt) || [];
+    return tokens.filter(token => 
+      /^(function|class|interface|type|const|let|var|import|export|return|if|else|for|while)$/i.test(token)
+    );
+  }
+
+  private countCodeBlocks(prompt: string): number {
+    const matches = prompt.match(/```[\s\S]*?```/g);
+    return matches ? matches.length : 0;
+  }
+
+  private countExamples(prompt: string): number {
+    const exampleMatches = prompt.match(/example|sample|instance|case/gi);
+    const codeBlocks = this.countCodeBlocks(prompt);
+    return (exampleMatches ? exampleMatches.length : 0) + codeBlocks;
   }
 } 

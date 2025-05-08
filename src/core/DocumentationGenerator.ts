@@ -67,22 +67,20 @@ export class DocumentationGenerator {
 
     // Convert assumptions to requirements
     analysis.assumptions.forEach(assumption => {
-      if (assumption.status === 'Confirmed') {
-        requirements.push({
-          id: `REQ-${assumption.id}`,
-          description: assumption.text,
-          priority: 'High',
-          status: 'Pending',
-          relatedTasks: []
-        });
-      }
+      requirements.push({
+        id: `REQ-${assumption.type}`,
+        description: assumption.description,
+        priority: assumption.impact === 'high' ? 'High' : assumption.impact === 'medium' ? 'Medium' : 'Low',
+        status: 'Pending',
+        relatedTasks: []
+      });
     });
 
     // Convert structural elements to requirements
     analysis.structuralElements.forEach(element => {
       requirements.push({
         id: `REQ-${element.type}-${element.name}`,
-        description: `Implement ${element.type} ${element.name}: ${element.description}`,
+        description: `Implement ${element.type} ${element.name}`,
         priority: 'Medium',
         status: 'Pending',
         relatedTasks: []

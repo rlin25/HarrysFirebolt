@@ -2,9 +2,19 @@ import { SystemConfig, PromptAnalysisResult, Assumption, ClarityFlag, Structural
 
 export class PromptAnalysisEngine {
   private config: SystemConfig;
+  private actionVerbs: Set<string>;
+  private technicalTerms: Set<string>;
 
   constructor(config: SystemConfig) {
     this.config = config;
+    this.actionVerbs = new Set([
+      'create', 'implement', 'build', 'develop', 'design', 'write', 'generate',
+      'calculate', 'compute', 'process', 'analyze', 'validate', 'test', 'deploy'
+    ]);
+    this.technicalTerms = new Set([
+      'function', 'class', 'method', 'variable', 'parameter', 'return', 'type',
+      'interface', 'module', 'package', 'dependency', 'algorithm', 'data structure'
+    ]);
   }
 
   public async analyze(prompt: string): Promise<PromptAnalysisResult> {
@@ -41,10 +51,38 @@ export class PromptAnalysisEngine {
 
   private async identifyAssumptions(prompt: string): Promise<Assumption[]> {
     const assumptions: Assumption[] = [];
+    const words = prompt.toLowerCase().split(/\s+/);
 
-    // TODO: Implement NLP-based assumption detection
-    // This should use transformer models to identify potential assumptions
-    // For now, return empty array
+    // Check for implicit assumptions about input data
+    if (words.includes('data') && !words.includes('format')) {
+      assumptions.push({
+        type: 'InputFormat',
+        description: 'Input data format is not specified',
+        impact: 'medium',
+        suggestion: 'Specify the expected format of input data'
+      });
+    }
+
+    // Check for implicit assumptions about error handling
+    if (!this.hasErrorHandling(prompt)) {
+      assumptions.push({
+        type: 'ErrorHandling',
+        description: 'Error handling requirements are not specified',
+        impact: 'high',
+        suggestion: 'Specify how errors should be handled'
+      });
+    }
+
+    // Check for implicit assumptions about performance
+    if (words.includes('process') && !words.includes('performance')) {
+      assumptions.push({
+        type: 'Performance',
+        description: 'Performance requirements are not specified',
+        impact: 'medium',
+        suggestion: 'Specify performance requirements or constraints'
+      });
+    }
+
     return assumptions;
   }
 
@@ -89,33 +127,51 @@ export class PromptAnalysisEngine {
       });
     });
 
-    // Check for error handling considerations
-    if (!this.hasErrorHandling(prompt)) {
-      flags.push({
-        type: 'MissingErrorHandlingConsideration',
-        segment: prompt,
-        suggestion: 'Consider adding error handling requirements'
-      });
-    }
-
     return flags;
   }
 
   private async identifyStructuralElements(prompt: string): Promise<StructuralElement[]> {
     const elements: StructuralElement[] = [];
+    const words = prompt.toLowerCase().split(/\s+/);
 
-    // TODO: Implement structural element detection
-    // This should identify classes, modules, functions, etc.
-    // For now, return empty array
+    // Identify function declarations
+    if (words.includes('function')) {
+      elements.push({
+        type: 'function',
+        name: this.extractFunctionName(prompt),
+        parameters: this.extractParameters(prompt),
+        returnType: this.extractReturnType(prompt)
+      });
+    }
+
+    // Identify class declarations
+    if (words.includes('class')) {
+      elements.push({
+        type: 'class',
+        name: this.extractClassName(prompt),
+        methods: this.extractMethods(prompt),
+        properties: this.extractProperties(prompt)
+      });
+    }
+
     return elements;
   }
 
   private async decomposeTasks(prompt: string): Promise<AnalysisTask[]> {
     const tasks: AnalysisTask[] = [];
+    const sentences = prompt.split(/[.!?]+/).filter(s => s.trim().length > 0);
 
-    // TODO: Implement task decomposition
-    // This should break down the prompt into actionable tasks
-    // For now, return empty array
+    sentences.forEach((sentence, index) => {
+      if (this.hasActionVerb(sentence)) {
+        tasks.push({
+          id: `TASK-${index + 1}`,
+          description: sentence.trim(),
+          dependencies: this.identifyTaskDependencies(sentence, tasks),
+          estimatedEffort: this.estimateTaskEffort(sentence)
+        });
+      }
+    });
+
     return tasks;
   }
 
@@ -129,28 +185,50 @@ export class PromptAnalysisEngine {
   }
 
   private hasActionVerb(prompt: string): boolean {
-    // TODO: Implement action verb detection
-    return true;
+    const words = prompt.toLowerCase().split(/\s+/);
+    return words.some(word => this.actionVerbs.has(word));
   }
 
   private async findUndefinedTerms(prompt: string): Promise<string[]> {
-    // TODO: Implement undefined term detection
-    return [];
+    const words = prompt.toLowerCase().split(/\s+/);
+    return words.filter(word => 
+      this.technicalTerms.has(word) && 
+      !this.isTermDefined(word, prompt)
+    );
   }
 
   private hasAmbiguousOutcome(prompt: string): boolean {
-    // TODO: Implement ambiguous outcome detection
-    return false;
+    const ambiguousPhrases = [
+      'should be', 'might be', 'could be', 'possibly',
+      'depending on', 'if needed', 'if required'
+    ];
+    return ambiguousPhrases.some(phrase => 
+      prompt.toLowerCase().includes(phrase)
+    );
   }
 
   private async findIncompleteParameters(prompt: string): Promise<string[]> {
-    // TODO: Implement incomplete parameter detection
-    return [];
+    const parameters: string[] = [];
+    const words = prompt.toLowerCase().split(/\s+/);
+    
+    // Look for parameter-like words without type specifications
+    words.forEach((word, index) => {
+      if (word === 'parameter' || word === 'input' || word === 'value') {
+        const nextWord = words[index + 1];
+        if (nextWord && !this.isTypeSpecification(nextWord)) {
+          parameters.push(nextWord);
+        }
+      }
+    });
+
+    return parameters;
   }
 
   private hasErrorHandling(prompt: string): boolean {
-    // TODO: Implement error handling detection
-    return true;
+    const errorTerms = ['error', 'exception', 'handle', 'catch', 'try'];
+    return errorTerms.some(term => 
+      prompt.toLowerCase().includes(term)
+    );
   }
 
   private countWords(prompt: string): number {
@@ -158,17 +236,94 @@ export class PromptAnalysisEngine {
   }
 
   private countSentences(prompt: string): number {
-    return prompt.split(/[.!?]+/).length;
+    return prompt.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
   }
 
   private async countTechnicalTerms(prompt: string): Promise<number> {
-    // TODO: Implement technical term counting
-    return 0;
+    const words = prompt.toLowerCase().split(/\s+/);
+    return words.filter(word => this.technicalTerms.has(word)).length;
   }
 
   private countCodeBlocks(prompt: string): number {
     const codeBlockRegex = /```[\s\S]*?```/g;
     const matches = prompt.match(codeBlockRegex);
     return matches ? matches.length : 0;
+  }
+
+  private isTermDefined(term: string, prompt: string): boolean {
+    const sentences = prompt.split(/[.!?]+/);
+    const termIndex = prompt.toLowerCase().indexOf(term);
+    if (termIndex === -1) return false;
+
+    // Check if the term is defined in the same sentence or previous sentence
+    const currentSentence = sentences.find(s => 
+      s.toLowerCase().includes(term)
+    );
+    if (!currentSentence) return false;
+
+    const definingPhrases = [
+      'is defined as', 'means', 'refers to', 'represents',
+      'is a', 'are', 'consists of'
+    ];
+
+    return definingPhrases.some(phrase => 
+      currentSentence.toLowerCase().includes(phrase)
+    );
+  }
+
+  private isTypeSpecification(word: string): boolean {
+    const types = [
+      'string', 'number', 'boolean', 'array', 'object',
+      'int', 'float', 'double', 'void', 'any'
+    ];
+    return types.includes(word.toLowerCase());
+  }
+
+  private extractFunctionName(prompt: string): string {
+    const functionMatch = prompt.match(/function\s+(\w+)/i);
+    return functionMatch ? functionMatch[1] : '';
+  }
+
+  private extractParameters(prompt: string): string[] {
+    const paramMatch = prompt.match(/\(([^)]+)\)/);
+    if (!paramMatch) return [];
+    return paramMatch[1].split(',').map(p => p.trim());
+  }
+
+  private extractReturnType(prompt: string): string {
+    const returnMatch = prompt.match(/->\s*(\w+)/i);
+    return returnMatch ? returnMatch[1] : 'void';
+  }
+
+  private extractClassName(prompt: string): string {
+    const classMatch = prompt.match(/class\s+(\w+)/i);
+    return classMatch ? classMatch[1] : '';
+  }
+
+  private extractMethods(prompt: string): string[] {
+    const methodMatches = prompt.match(/method\s+(\w+)/gi);
+    return methodMatches ? methodMatches.map(m => m.split(/\s+/)[1]) : [];
+  }
+
+  private extractProperties(prompt: string): string[] {
+    const propertyMatches = prompt.match(/property\s+(\w+)/gi);
+    return propertyMatches ? propertyMatches.map(p => p.split(/\s+/)[1]) : [];
+  }
+
+  private identifyTaskDependencies(sentence: string, existingTasks: AnalysisTask[]): string[] {
+    const dependencies: string[] = [];
+    existingTasks.forEach(task => {
+      if (sentence.toLowerCase().includes(task.description.toLowerCase())) {
+        dependencies.push(task.id);
+      }
+    });
+    return dependencies;
+  }
+
+  private estimateTaskEffort(sentence: string): 'low' | 'medium' | 'high' {
+    const wordCount = this.countWords(sentence);
+    if (wordCount <= 5) return 'low';
+    if (wordCount <= 10) return 'medium';
+    return 'high';
   }
 } 
