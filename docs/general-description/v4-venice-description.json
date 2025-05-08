@@ -311,25 +311,25 @@
               {
                 "name": "Quality Improvement",
                 "metrics": [
-                  "$\ge 30\%$ reduction in developer-introduced code rework after initial AI generation. (Measurement: Tracking lines changed post-generation with examples of how the system tracks lines changed post-generation and links issue reports to generated code via tracing)",
-                  "$\ge 40\%$ reduction in bug reports directly attributable to initially generated code components. (Measurement: Linking issue reports to generated code via tracing with examples of how the system links issue reports to generated code via tracing)",
-                  "$\ge 50\%$ improvement in the proportion of generated code components with adequate test coverage (assuming AI generates tests or stubs). (Measurement: Automated test coverage analysis with examples of how the system performs automated test coverage analysis)"
+                  ">= 30% reduction in developer-introduced code rework after initial AI generation. (Measurement: Tracking lines changed post-generation with examples of how the system tracks lines changed post-generation and links issue reports to generated code via tracing)",
+                  ">= 40% reduction in bug reports directly attributable to initially generated code components. (Measurement: Linking issue reports to generated code via tracing with examples of how the system links issue reports to generated code via tracing)",
+                  ">= 50% improvement in the proportion of generated code components with adequate test coverage (assuming AI generates tests or stubs). (Measurement: Automated test coverage analysis with examples of how the system performs automated test coverage analysis)"
                 ]
               },
               {
                 "name": "Efficiency Gains",
                 "metrics": [
-                  "$\ge 25\%$ reduction in total time elapsed from initial prompt submission to the acceptance of implemented code. (Measurement: Time tracking from prompt start to code check-in/approval with examples of how the system tracks time from prompt start to code check-in/approval)",
-                  "$\ge 35\%$ reduction in the average number of interactive clarification iterations per prompt. (Measurement: Counting clarification steps per prompt session with examples of how the system counts clarification steps per prompt session)",
-                  "$\ge 45\%$ increase in the rate of prompts leading directly to accepted code on the first AI generation attempt. (Measurement: Tracking first-pass acceptance rates linked to validation outcomes with examples of how the system tracks first-pass acceptance rates)"
+                  ">= 25% reduction in total time elapsed from initial prompt submission to the acceptance of implemented code. (Measurement: Time tracking from prompt start to code check-in/approval with examples of how the system tracks time from prompt start to code check-in/approval)",
+                  ">= 35% reduction in the average number of interactive clarification iterations per prompt. (Measurement: Counting clarification steps per prompt session with examples of how the system counts clarification steps per prompt session)",
+                  ">= 45% increase in the rate of prompts leading directly to accepted code on the first AI generation attempt. (Measurement: Tracking first-pass acceptance rates linked to validation outcomes with examples of how the system tracks first-pass acceptance rates)"
                 ]
               },
               {
                 "name": "Developer Experience",
                 "metrics": [
-                  "User satisfaction scores consistently $\ge 4.2/5$ on a standardized usability scale (e.g., SUS). (Measurement: In-app user surveys with examples of how the system collects and analyzes user satisfaction scores)",
-                  "$\ge 70\%$ stated preference rate for using Cursor AI with Harry's Firebolt compared to using Cursor AI directly. (Measurement: Comparative user surveys with examples of how the system conducts comparative user surveys)",
-                  "Average learning curve completion (basic functionality) within $\le 5$ minutes for developers familiar with AI code generation concepts. (Measurement: User onboarding flow tracking and feedback with examples of how the system tracks and analyzes user onboarding data)"
+                  "User satisfaction scores consistently >= 4.2/5 on a standardized usability scale (e.g., SUS). (Measurement: In-app user surveys with examples of how the system collects and analyzes user satisfaction scores)",
+                  ">= 70% stated preference rate for using Cursor AI with Harry's Firebolt compared to using Cursor AI directly. (Measurement: Comparative user surveys with examples of how the system conducts comparative user surveys)",
+                  "Average learning curve completion (basic functionality) within <= 5 minutes for developers familiar with AI code generation concepts. (Measurement: User onboarding flow tracking and feedback with examples of how the system tracks and analyzes user onboarding data)"
                 ]
               }
             ]

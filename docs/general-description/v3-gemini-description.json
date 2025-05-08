@@ -33,23 +33,23 @@
               },
               {
                 "name": "Planning & Structure Generator",
-                "description": "Utilizes the validated prompt data, specifically decomposed tasks and identified structural elements. Converts natural language objectives and structural intentions into computational representations like directed acyclic graphs (DAGs) for task dependencies and Abstract Syntax Tree (AST)-like structures or relationship maps for components. Outputs a structured implementation plan and a representation of intended code structure."
-              "::: Possible data flow hint: Takes validated prompt from Validation Pipeline, potentially structural info from Implementation Monitor (existing codebase analysis)."
+                "description": "Utilizes the validated prompt data, specifically decomposed tasks and identified structural elements. Converts natural language objectives and structural intentions into computational representations like directed acyclic graphs (DAGs) for task dependencies and Abstract Syntax Tree (AST)-like structures or relationship maps for components. Outputs a structured implementation plan and a representation of intended code structure.",
+                "data_flow": "Takes validated prompt from Validation Pipeline, potentially structural info from Implementation Monitor (existing codebase analysis)."
               },
               {
                 "name": "Documentation Generator",
-                "description": "Automatically produces standardized, structured documentation based on the output of the Validation Pipeline and Planning & Structure Generator. Creates structured requirements documents (e.g., JSONSchema), component/task breakdown trees (e.g., JSON or Markdown), dependency considerations, and change tracking manifests, ensuring all derived specifications are clear and well-documented."
-              "::: Possible data flow hint: Takes validated prompt from Validation Pipeline, plan/structure from Planning & Structure Generator."
+                "description": "Automatically produces standardized, structured documentation based on the output of the Validation Pipeline and Planning & Structure Generator. Creates structured requirements documents (e.g., JSONSchema), component/task breakdown trees (e.g., JSON or Markdown), dependency considerations, and change tracking manifests, ensuring all derived specifications are clear and well-documented.",
+                "data_flow": "Takes validated prompt from Validation Pipeline, plan/structure from Planning & Structure Generator."
               },
               {
                 "name": "Implementation Monitor",
-                "description": "Connects the validated plan and structural intentions to the development environment. Tracks coding activity (via filesystem monitoring or optional Git integration) to detect code changes, classify them by type and scope, identify logical commit boundaries, and monitor progress against planned components/tasks. Detects and alerts on potential deviations where implementation diverges from the validated plan or intended structure."
-              "::: Possible data flow hint: Takes plan/structure from Planning & Structure Generator, code changes from Filesystem/Git. Outputs change data, progress updates."
+                "description": "Connects the validated plan and structural intentions to the development environment. Tracks coding activity (via filesystem monitoring or optional Git integration) to detect code changes, classify them by type and scope, identify logical commit boundaries, and monitor progress against planned components/tasks. Detects and alerts on potential deviations where implementation diverges from the validated plan or intended structure.",
+                "data_flow": "Takes plan/structure from Planning & Structure Generator, code changes from Filesystem/Git. Outputs change data, progress updates."
               },
               {
                 "name": "Feedback Integration System",
-                "description": "Continuously processes data from user interactions and system performance metrics (logged by other components). Adapts internal heuristics, clarity thresholds, and interaction models based on user confirmations, rejections, modification patterns, task completion rates, and explicit user feedback. Refines the system's understanding of user preferences, common prompt pitfalls, and effective validation strategies over time."
-              "::: Possible data flow hint: Takes interaction logs/metrics from all components. Outputs updated model parameters/heuristics (internal system config)."
+                "description": "Continuously processes data from user interactions and system performance metrics (logged by other components). Adapts internal heuristics, clarity thresholds, and interaction models based on user confirmations, rejections, modification patterns, task completion rates, and explicit user feedback. Refines the system's understanding of user preferences, common prompt pitfalls, and effective validation strategies over time.",
+                "data_flow": "Takes interaction logs/metrics from all components. Outputs updated model parameters/heuristics (internal system config)."
               }
             ]
           }
@@ -319,25 +319,25 @@
               {
                 "name": "Quality Improvement",
                 "metrics": [
-                  "$\ge 30\%$ reduction in developer-introduced code rework after initial AI generation. (Measurement: Tracking lines changed post-generation)",
-                  "$\ge 40\%$ reduction in bug reports directly attributable to initially generated code components. (Measurement: Linking issue reports to generated code via tracing)",
-                  "$\ge 50\%$ improvement in the proportion of generated code components with adequate test coverage (assuming AI generates tests or stubs). (Measurement: Automated test coverage analysis)"
+                  ">= 30% reduction in developer-introduced code rework after initial AI generation. (Measurement: Tracking lines changed post-generation)",
+                  ">= 40% reduction in bug reports directly attributable to initially generated code components. (Measurement: Linking issue reports to generated code via tracing)",
+                  ">= 50% improvement in the proportion of generated code components with adequate test coverage (assuming AI generates tests or stubs). (Measurement: Automated test coverage analysis)"
                 ]
               },
               {
                 "name": "Efficiency Gains",
                 "metrics": [
-                  "$\ge 25\%$ reduction in total time elapsed from initial prompt submission to the acceptance of implemented code. (Measurement: Time tracking from prompt start to code check-in/approval)",
-                  "$\ge 35\%$ reduction in the average number of interactive clarification iterations per prompt. (Measurement: Counting clarification steps per prompt session)",
-                  "$\ge 45\%$ increase in the rate of prompts leading directly to accepted code on the first AI generation attempt. (Measurement: Tracking first-pass acceptance rates linked to validation outcomes)"
+                  ">= 25% reduction in total time elapsed from initial prompt submission to the acceptance of implemented code. (Measurement: Time tracking from prompt start to code check-in/approval)",
+                  ">= 35% reduction in the average number of interactive clarification iterations per prompt. (Measurement: Counting clarification steps per prompt session)",
+                  ">= 45% increase in the rate of prompts leading directly to accepted code on the first AI generation attempt. (Measurement: Tracking first-pass acceptance rates linked to validation outcomes)"
                 ]
               },
               {
                 "name": "Developer Experience",
                 "metrics": [
-                  "User satisfaction scores consistently $\ge 4.2/5$ on a standardized usability scale (e.g., SUS). (Measurement: In-app user surveys)",
-                  "$\ge 70\%$ stated preference rate for using Cursor AI with Harry's Firebolt compared to using Cursor AI directly. (Measurement: Comparative user surveys)",
-                  "Average learning curve completion (basic functionality) within $\le 5$ minutes for developers familiar with AI code generation concepts. (Measurement: User onboarding flow tracking and feedback)"
+                  "User satisfaction scores consistently >= 4.2/5 on a standardized usability scale (e.g., SUS). (Measurement: In-app user surveys)",
+                  ">= 70% stated preference rate for using Cursor AI with Harry's Firebolt compared to using Cursor AI directly. (Measurement: Comparative user surveys)",
+                  "Average learning curve completion (basic functionality) within <= 5 minutes for developers familiar with AI code generation concepts. (Measurement: User onboarding flow tracking and feedback)"
                 ]
               }
             ]
