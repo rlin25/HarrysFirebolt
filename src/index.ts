@@ -11,7 +11,7 @@ interface ValidateRequest {
 }
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Initialize validator and enhancer with default config
 const validator = new PromptValidator(defaultConfig);
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
         description: 'Validates and enhances a prompt'
       },
       websocket: {
-        path: 'ws://localhost:3001',
+        path: 'ws://localhost:3007',
         description: 'Real-time prompt validation and enhancement'
       }
     }
