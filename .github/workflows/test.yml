@@ -19,24 +19,47 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
     
+    - name: Debug environment
+      run: |
+        echo "Node version:"
+        node --version
+        echo "NPM version:"
+        npm --version
+        echo "Current directory:"
+        pwd
+        echo "Directory contents:"
+        ls -la
+    
     - name: Install dependencies
       run: |
+        echo "Installing dependencies..."
         npm install
+        echo "Installed packages:"
         npm list --depth=0
     
     - name: Verify TypeScript setup
       run: |
+        echo "TypeScript version:"
         npx tsc --version
+        echo "ts-node version:"
         npx ts-node --version
+        echo "TypeScript configuration:"
+        cat tsconfig.json
     
     - name: Type check
       run: |
+        echo "Running type check..."
         npx tsc --noEmit
         echo "TypeScript check completed"
     
     - name: Run basic test
       run: |
         echo "Starting test..."
+        echo "Current directory:"
+        pwd
+        echo "Test file contents:"
+        cat src/test.ts
+        echo "Running test..."
         NODE_ENV=test npx ts-node --transpile-only src/test.ts
         echo "Test completed"
       continue-on-error: true 
