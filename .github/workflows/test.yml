@@ -1,4 +1,4 @@
-name: Basic Test
+name: Test and Build
 
 on:
   push:
@@ -10,17 +10,44 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
     steps:
     - uses: actions/checkout@v3
     
-    - name: Setup Node.js
+    - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
-        node-version: '18.x'
+        node-version: ${{ matrix.node-version }}
         cache: 'npm'
     
-    - name: Install and test
-      run: |
-        npm install
-        npx tsc --noEmit
-        NODE_ENV=test npx ts-node --transpile-only src/test.ts 
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run CI checks
+      run: npm run ci
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella-node-${{ matrix.node-version }}
+        fail_ci_if_error: true
+        verbose: true
+
+    - name: Run integration tests
+      run: NODE_ENV=test npx ts-node --transpile-only src/test.ts
+      
+    - name: Build
+      run: npm run build 
