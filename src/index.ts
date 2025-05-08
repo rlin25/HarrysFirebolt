@@ -18,6 +18,26 @@ const validator = new PromptValidator(defaultConfig);
 // Middleware
 app.use(express.json());
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Harry\'s Firebolt',
+    version: defaultConfig.version,
+    description: 'Prompt validation and enhancement middleware for AI code generators',
+    endpoints: {
+      validate: {
+        method: 'POST',
+        path: '/validate',
+        description: 'Validates and enhances a prompt'
+      },
+      websocket: {
+        path: 'ws://localhost:3001',
+        description: 'Real-time prompt validation and enhancement'
+      }
+    }
+  });
+});
+
 // Routes
 const validateHandler: RequestHandler = (req, res) => {
   const { prompt } = req.body as ValidateRequest;
