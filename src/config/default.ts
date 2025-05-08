@@ -3,9 +3,9 @@ import { SystemConfig } from '../types';
 export const defaultConfig: SystemConfig = {
   version: '1.0.0',
   validationThresholds: {
-    minLength: 10,
-    maxLength: 5000,
-    minClarity: 0.7
+    minLength: 20,
+    maxLength: 2000,
+    minClarity: 0.5
   },
   enhancementRules: {
     enableAutoFormatting: true,
@@ -15,6 +15,6 @@ export const defaultConfig: SystemConfig = {
   logging: {
     level: 'info',
     enableConsole: true,
-    enableFile: true
+    enableFile: false
   }
 }; 

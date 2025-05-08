@@ -3,6 +3,7 @@ import { WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { defaultConfig } from './config/default';
 import { PromptValidator } from './utils/validator';
+import { PromptEnhancer } from './utils/enhancer';
 import { EnhancedPrompt, ValidationResult } from './types';
 
 interface ValidateRequest {
@@ -12,8 +13,9 @@ interface ValidateRequest {
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Initialize validator with default config
+// Initialize validator and enhancer with default config
 const validator = new PromptValidator(defaultConfig);
+const enhancer = new PromptEnhancer(defaultConfig);
 
 // Middleware
 app.use(express.json());
@@ -50,7 +52,7 @@ const validateHandler: RequestHandler = (req, res) => {
   const validation = validator.validate(prompt);
   const enhancedPrompt: EnhancedPrompt = {
     original: prompt,
-    enhanced: prompt, // TODO: Implement enhancement
+    enhanced: enhancer.enhance(prompt),
     metadata: {
       id: uuidv4(),
       timestamp: Date.now(),
@@ -66,7 +68,7 @@ const validateHandler: RequestHandler = (req, res) => {
 app.post('/validate', validateHandler);
 
 // WebSocket server for real-time validation
-const wss = new WebSocketServer({ port: 3001 });
+const wss = new WebSocketServer({ port: 3007 });
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
@@ -78,7 +80,7 @@ wss.on('connection', (ws) => {
       
       const enhancedPrompt: EnhancedPrompt = {
         original: prompt,
-        enhanced: prompt, // TODO: Implement enhancement
+        enhanced: enhancer.enhance(prompt),
         metadata: {
           id: uuidv4(),
           timestamp: Date.now(),
@@ -102,5 +104,5 @@ wss.on('connection', (ws) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  console.log(`WebSocket server running on port 3001`);
+  console.log(`WebSocket server running on port 3007`);
 }); 
