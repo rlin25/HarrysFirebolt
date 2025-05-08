@@ -1,5 +1,10 @@
 # Harry's Firebolt
 
+[![Build Status](https://github.com/rlin25/HarrysFirebolt/actions/workflows/test.yml/badge.svg)](https://github.com/rlin25/HarrysFirebolt/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/rlin25/HarrysFirebolt/branch/main/graph/badge.svg)](https://codecov.io/gh/rlin25/HarrysFirebolt)
+[![npm version](https://badge.fury.io/js/harrys-firebolt.svg)](https://badge.fury.io/js/harrys-firebolt)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+
 A prompt validation and enhancement middleware for AI code generators.
 
 ## Overview
