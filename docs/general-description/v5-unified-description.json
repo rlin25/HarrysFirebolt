@@ -1,0 +1,400 @@
+{
+  "systemName": "HarrysFirebolt",
+  "version": "2.0.0",
+  "timestamp": "2024-03-19T00:00:00Z",
+  "compatibility": {
+    "supportsVersions": ["1.0.0", "1.1.0", "2.0.0"],
+    "backwardCompatible": true
+  },
+  "corePurpose": {
+    "primary": "Enhance the quality, clarity, and maintainability of AI-assisted software development",
+    "secondary": "Establish a rigorous interface between users and AI toolchains",
+    "target": "Cursor AI IDE integration"
+  },
+  "technicalArchitecture": {
+    "components": {
+      "promptAnalysisEngine": {
+        "purpose": "Parse and analyze natural language prompts",
+        "capabilities": [
+          "NLP-based requirement extraction",
+          "Assumption identification",
+          "Ambiguity detection",
+          "Dependency analysis"
+        ],
+        "tier": "tier1",
+        "technicalDetails": {
+          "implementation": "Employs transformer-based NLP techniques and pattern matching against a dynamic knowledge base",
+          "dataFlow": "Receives raw natural language prompts, outputs structured representation and identified issues",
+          "learning": "Knowledge base adapts to idiomatic expressions and domain-specific jargon",
+          "examples": {
+            "goodPrompt": "Create a REST API endpoint that handles user authentication with JWT tokens",
+            "badPrompt": "Make a thing that does user stuff"
+          }
+        }
+      },
+      "validationPipeline": {
+        "purpose": "Process prompts through validation stages",
+        "capabilities": [
+          "Semantic clarity scoring",
+          "Ambiguity detection",
+          "Completeness verification",
+          "Contradiction detection"
+        ],
+        "tier": "tier2",
+        "technicalDetails": {
+          "implementation": "Applies sequential validation stages with configurable heuristics",
+          "dataFlow": "Takes structured representation, outputs validated prompt object and metadata",
+          "scoring": "Semantic clarity scoring (0-100) with configurable thresholds",
+          "examples": {
+            "validationChecks": [
+              "Clear action verbs present",
+              "Terms properly defined",
+              "Error handling considered",
+              "Edge cases addressed"
+            ]
+          }
+        }
+      },
+      "documentationGenerator": {
+        "purpose": "Generate standardized documentation",
+        "capabilities": [
+          "Requirements documentation",
+          "Task breakdown",
+          "Dependency mapping",
+          "Change tracking"
+        ],
+        "tier": "tier1",
+        "technicalDetails": {
+          "implementation": "Produces structured documentation in multiple formats",
+          "formats": ["JSONSchema", "Markdown", "JSON"],
+          "review": "Includes user feedback step for documentation quality",
+          "examples": {
+            "outputTypes": [
+              "Structured requirements documents",
+              "Component/task breakdown trees",
+              "Dependency considerations",
+              "Change tracking manifests"
+            ]
+          }
+        }
+      },
+      "implementationMonitor": {
+        "purpose": "Track coding activity and alignment",
+        "capabilities": [
+          "Change detection",
+          "Commit boundary identification",
+          "Progress tracking",
+          "Deviation alerts"
+        ],
+        "tier": "tier2",
+        "technicalDetails": {
+          "implementation": "Tracks coding activity via filesystem or Git integration",
+          "monitoring": "Detects and classifies code changes by type and scope",
+          "integration": "Optional Git integration for enhanced tracking",
+          "examples": {
+            "commitMetadata": {
+              "format": "Structured JSON with links to requirements",
+              "template": "Pre-filled with context from validated prompt"
+            }
+          }
+        }
+      },
+      "feedbackIntegration": {
+        "purpose": "Process user feedback for improvement",
+        "capabilities": [
+          "User preference adaptation",
+          "Threshold refinement",
+          "Interaction learning",
+          "Style personalization"
+        ],
+        "tier": "tier3",
+        "technicalDetails": {
+          "implementation": "Processes interaction data and performance metrics",
+          "metrics": [
+            "Clarification iteration count",
+            "Reformulation acceptance rate",
+            "Task completion rates",
+            "User satisfaction scores"
+          ],
+          "adaptation": "Refines heuristics and parameters based on feedback",
+          "examples": {
+            "feedbackTypes": [
+              "Suggestion ratings",
+              "Validation experience",
+              "Recovery options",
+              "Session management"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "implementationTiers": {
+    "tier1": {
+      "name": "Basic",
+      "description": "Core functionality with essential features",
+      "components": [
+        "Basic prompt analysis",
+        "Simple validation",
+        "Markdown documentation",
+        "Basic monitoring"
+      ],
+      "performance": {
+        "promptAnalysis": "<2 seconds",
+        "documentation": "<5 seconds",
+        "interaction": "<100ms"
+      }
+    },
+    "tier2": {
+      "name": "Standard",
+      "description": "Enhanced features with structured processing",
+      "components": [
+        "Advanced prompt analysis",
+        "Structured validation",
+        "JSON documentation",
+        "Enhanced monitoring"
+      ],
+      "performance": {
+        "promptAnalysis": "<1.5 seconds",
+        "documentation": "<3 seconds",
+        "interaction": "<50ms"
+      }
+    },
+    "tier3": {
+      "name": "Advanced",
+      "description": "Sophisticated features with machine learning",
+      "components": [
+        "ML-based analysis",
+        "Adaptive validation",
+        "Intelligent documentation",
+        "Predictive monitoring"
+      ],
+      "performance": {
+        "promptAnalysis": "<1 second",
+        "documentation": "<2 seconds",
+        "interaction": "<25ms"
+      }
+    }
+  },
+  "technicalRequirements": {
+    "system": {
+      "runtime": "Node.js v16+",
+      "memory": "4GB+ RAM (8GB+ recommended)",
+      "storage": "Local filesystem access",
+      "network": "WebSocket support"
+    },
+    "integration": {
+      "cursorAI": {
+        "type": "REST API",
+        "endpoints": ["/prompt/validate", "/prompt/submit"],
+        "dataFormats": ["JSON", "JSONSchema"]
+      },
+      "filesystem": {
+        "access": "Local read/write",
+        "purposes": [
+          "Project structure analysis",
+          "Code context reading",
+          "Documentation writing"
+        ]
+      },
+      "git": {
+        "access": "Optional read/write",
+        "features": [
+          "Change tracking",
+          "Commit suggestions",
+          "History analysis"
+        ]
+      },
+      "browser": {
+        "storage": "Local Storage/IndexedDB",
+        "purposes": [
+          "Session state",
+          "User preferences",
+          "Temporary data"
+        ]
+      }
+    },
+    "performance": {
+      "promptAnalysis": {
+        "target": "<2 seconds",
+        "scope": "Prompts up to 500 tokens",
+        "benchmarks": "Tested with 1000+ sample prompts"
+      },
+      "documentation": {
+        "target": "<5 seconds",
+        "scope": "Standard output formats",
+        "benchmarks": "Tested with various project sizes"
+      },
+      "interaction": {
+        "target": "<100ms",
+        "scope": "Per user interaction",
+        "benchmarks": "Tested with 100+ concurrent users"
+      },
+      "codebaseSize": {
+        "limit": "100,000 LOC",
+        "degradation": "<3x slowdown",
+        "optimization": "Proportional to codebase size"
+      }
+    }
+  },
+  "usageWorkflow": {
+    "initialEngagement": {
+      "steps": [
+        "Enter prompt",
+        "Initial analysis",
+        "Clarity scoring",
+        "Threshold check"
+      ],
+      "tier": "tier1",
+      "examples": {
+        "supportedPrompts": [
+          "Feature implementation",
+          "Bug fixes",
+          "Code refactoring",
+          "Documentation updates"
+        ]
+      }
+    },
+    "clarificationPhase": {
+      "steps": [
+        "Present questions",
+        "Gather information",
+        "Process responses",
+        "Update clarity score"
+      ],
+      "tier": "tier2",
+      "examples": {
+        "commonAmbiguities": [
+          "Undefined terms",
+          "Missing error handling",
+          "Unclear requirements",
+          "Incomplete specifications"
+        ]
+      }
+    },
+    "planningPhase": {
+      "steps": [
+        "Generate plan",
+        "Review adjustments",
+        "Create documentation",
+        "Validate structure"
+      ],
+      "tier": "tier2",
+      "examples": {
+        "planTypes": [
+          "Task breakdown",
+          "Dependency graph",
+          "Timeline estimation",
+          "Resource allocation"
+        ]
+      }
+    },
+    "implementationPhase": {
+      "steps": [
+        "Process prompt",
+        "Monitor code",
+        "Track progress",
+        "Suggest commits"
+      ],
+      "tier": "tier1",
+      "examples": {
+        "monitoringTypes": [
+          "Code changes",
+          "File modifications",
+          "Dependency updates",
+          "Test coverage"
+        ]
+      }
+    },
+    "feedbackLoop": {
+      "steps": [
+        "Collect feedback",
+        "Update models",
+        "Adapt patterns",
+        "Improve future"
+      ],
+      "tier": "tier3",
+      "examples": {
+        "feedbackTypes": [
+          "User ratings",
+          "Success metrics",
+          "Error reports",
+          "Improvement suggestions"
+        ]
+      }
+    }
+  },
+  "successMetrics": {
+    "quality": {
+      "reworkReduction": "30%+",
+      "bugReduction": "40%+",
+      "testCoverage": "50%+"
+    },
+    "efficiency": {
+      "timeReduction": "25%+",
+      "iterationReduction": "35%+",
+      "acceptanceRate": "45%+"
+    },
+    "experience": {
+      "satisfactionScore": ">4.2/5",
+      "preferenceRate": ">70%",
+      "learningCurve": "<5 minutes"
+    }
+  },
+  "implementationRoadmap": {
+    "phase1": {
+      "name": "Core Validation",
+      "duration": "Weeks 1-4",
+      "components": [
+        "Prompt analysis",
+        "Clarity scoring",
+        "Basic documentation",
+        "API integration"
+      ]
+    },
+    "phase2": {
+      "name": "Planning and Structure",
+      "duration": "Weeks 5-8",
+      "components": [
+        "Plan generation",
+        "Task breakdown",
+        "Structure analysis",
+        "Visualization"
+      ]
+    },
+    "phase3": {
+      "name": "Monitoring and Optimization",
+      "duration": "Weeks 9-12",
+      "components": [
+        "Change tracking",
+        "Dependency analysis",
+        "Self-monitoring",
+        "Feedback collection"
+      ]
+    },
+    "phase4": {
+      "name": "Refinement and Scaling",
+      "duration": "Weeks 13-16",
+      "components": [
+        "Performance optimization",
+        "Pattern adaptation",
+        "Team features",
+        "Metrics dashboard"
+      ]
+    }
+  },
+  "limitations": {
+    "structural": "Balance between structure and flexibility",
+    "learning": "Initial time investment required",
+    "integration": "Limited by external API capabilities",
+    "context": "Project context management overhead",
+    "adaptation": "Diverse development styles support"
+  },
+  "futureDirections": {
+    "collaboration": "Team context and terminology sharing",
+    "adaptation": "Custom domain-specific validation",
+    "learning": "Cross-project pattern recognition",
+    "integration": "Additional AI service support",
+    "refinement": "Documentation quality improvement"
+  }
+} 
