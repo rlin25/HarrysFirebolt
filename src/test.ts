@@ -1,39 +1,76 @@
-console.log('Starting test suite...');
+import { AIEngine } from './core/AIEngine';
+import { SystemConfig } from './types';
 
-// Test 1: UUID
-import { v4 as uuidv4 } from 'uuid';
-try {
-  console.log('Running UUID test...');
-  const uuid = uuidv4();
-  console.log('Test 1 - UUID:', uuid);
-} catch (error) {
-  console.error('UUID test failed:', error);
-  process.exit(1);
+async function runTests() {
+  // Initialize AI Engine with test configuration
+  const config: SystemConfig = {
+    version: '1.0.0',
+    validationThresholds: {
+      minLength: 10,
+      maxLength: 1000,
+      minClarity: 0.7
+    },
+    enhancementRules: {
+      enableAutoFormatting: true,
+      enableClarityEnhancement: true,
+      enableStructureEnhancement: true
+    },
+    logging: {
+      level: 'debug',
+      enableConsole: true,
+      enableFile: false
+    },
+    performance: {
+      promptAnalysisTimeout: 5000,
+      documentationTimeout: 5000,
+      interactionTimeout: 5000
+    },
+    feedback: {
+      enableLearning: true,
+      minFeedbackThreshold: 0.7,
+      adaptationRate: 0.1
+    }
+  };
+
+  const engine = new AIEngine(config);
+
+  try {
+    // Test prompt processing
+    console.log('Testing prompt processing...');
+    const testPrompt = 'Create a function that calculates the Fibonacci sequence up to n terms';
+    const result = await engine.processPrompt(testPrompt);
+    console.log('Prompt processing result:', JSON.stringify(result, null, 2));
+
+    // Test prompt enhancement
+    console.log('\nTesting prompt enhancement...');
+    const enhancedPrompt = await engine.enhancePrompt(testPrompt);
+    console.log('Enhanced prompt:', enhancedPrompt);
+
+    // Test feedback processing
+    console.log('\nTesting feedback processing...');
+    await engine.processFeedback({
+      id: 'test-1',
+      promptId: 'test-1',
+      rating: 0.8,
+      comments: 'Good enhancement, but could be more detailed',
+      timestamp: new Date().toISOString(),
+      metadata: {
+        clarity: 0.8,
+        validation: 0.7,
+        enhancement: 0.75,
+        userSatisfaction: 0.8
+      }
+    });
+
+    // Get system metrics
+    console.log('\nGetting system metrics...');
+    const metrics = await engine.getSystemMetrics();
+    console.log('System metrics:', JSON.stringify(metrics, null, 2));
+
+    console.log('\nAll tests completed successfully!');
+  } catch (error) {
+    console.error('Test failed:', error);
+  }
 }
 
-// Test 2: Natural
-import natural from 'natural';
-try {
-  console.log('Running Natural test...');
-  const tokenizer = new natural.WordTokenizer();
-  const tokens = tokenizer.tokenize('test');
-  console.log('Test 2 - Natural:', tokens);
-} catch (error) {
-  console.error('Natural test failed:', error);
-  process.exit(1);
-}
-
-// Test 3: Ajv
-import Ajv from 'ajv';
-try {
-  console.log('Running Ajv test...');
-  const ajv = new Ajv();
-  const validate = ajv.compile({ type: 'string' });
-  console.log('Test 3 - Ajv:', validate);
-} catch (error) {
-  console.error('Ajv test failed:', error);
-  process.exit(1);
-}
-
-console.log('All basic tests completed successfully');
-process.exit(0); 
+runTests().catch(console.error); 

@@ -62,6 +62,30 @@ For development:
 npm run dev
 ```
 
+## Testing
+
+The project uses Jest for testing and Codecov for coverage reporting. Available test commands:
+
+```bash
+# Run tests with coverage
+npm test
+
+# Run tests in watch mode (development)
+npm run test:watch
+
+# Run tests in CI environment
+npm run test:ci
+
+# Run type checking
+npm run typecheck
+
+# Run linting
+npm run lint
+
+# Run all CI checks
+npm run ci
+```
+
 ## API Documentation
 
 ### REST API
@@ -119,8 +143,21 @@ The system can be configured through `src/config/default.ts`. Key settings inclu
 
 - `npm run build` - Build the project
 - `npm run dev` - Run in development mode
-- `npm test` - Run tests
+- `npm test` - Run tests with coverage
+- `npm run test:watch` - Run tests in watch mode
 - `npm run lint` - Run linter
+- `npm run lint:fix` - Run linter with auto-fix
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run ci` - Run all CI checks
+
+## Continuous Integration
+
+The project uses GitHub Actions for CI/CD with the following features:
+
+- Automated testing on Node.js 18.x and 20.x
+- Code coverage reporting via Codecov
+- Type checking and linting
+- Build verification
 
 ## License
 

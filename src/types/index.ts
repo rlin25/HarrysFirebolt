@@ -1,9 +1,4 @@
-export interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-  warnings: string[];
-  suggestions: string[];
-}
+import { ValidationResult } from './validation';
 
 export interface PromptMetadata {
   id: string;
@@ -19,21 +14,13 @@ export interface EnhancedPrompt {
   validation: ValidationResult;
 }
 
-export interface SystemConfig {
-  version: string;
-  validationThresholds: {
-    minLength: number;
-    maxLength: number;
-    minClarity: number;
-  };
-  enhancementRules: {
-    enableAutoFormatting: boolean;
-    enableClarityEnhancement: boolean;
-    enableStructureEnhancement: boolean;
-  };
-  logging: {
-    level: 'debug' | 'info' | 'warn' | 'error';
-    enableConsole: boolean;
-    enableFile: boolean;
-  };
-} 
+export * from './validation';
+export * from './analysis';
+export * from './documentation';
+export * from './feedback';
+
+// Re-export specific types to avoid naming conflicts
+export { Task as DocumentationTask } from './documentation';
+
+// Export SystemConfig directly from config
+export type { SystemConfig } from './config'; 
