@@ -20,10 +20,17 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm install
+        npm list
     
     - name: Type check
-      run: npx tsc --noEmit
+      run: |
+        npx tsc --noEmit
+        echo "TypeScript check completed"
     
     - name: Run basic test
-      run: npx ts-node src/test.ts 
+      run: |
+        echo "Starting test..."
+        npx ts-node --transpile-only src/test.ts
+        echo "Test completed" 
